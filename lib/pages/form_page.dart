@@ -209,10 +209,7 @@ class _FormPageState extends State<FormPage> {
         TextFormField(
           controller: nameInputController,
           decoration: const InputDecoration(
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 12,
-            ),
+            contentPadding: Constants.fieldPadding,
             hintText: 'Name*',
           ),
           onSaved: (value) {
@@ -248,10 +245,7 @@ class _FormPageState extends State<FormPage> {
             controller: dateInputController,
             keyboardType: TextInputType.datetime,
             decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 12,
-              ),
+              contentPadding: Constants.fieldPadding,
               suffixIcon: Icon(Icons.calendar_today_outlined),
               hintText: 'Date of Birth*',
             ),
@@ -309,6 +303,7 @@ class _FormPageState extends State<FormPage> {
         TextFormField(
           maxLines: 3,
           decoration: const InputDecoration(
+            contentPadding: Constants.fieldPadding,
             hintText: 'Enter your message',
           ),
           onSaved: (value) {

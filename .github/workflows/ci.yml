@@ -1,0 +1,27 @@
+name: Run analyze and tests
+on: pull_request
+jobs:
+  flutter-analyze-and-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '3.7.4'
+      - name: Get Dependencies
+        run: flutter pub get
+        # pub get doesn't give up on trying to fetch dependencies.
+        # See: https://github.com/dart-lang/pub/issues/2242
+        # This bone-headed-ness is not needed from a tool that racks up
+        # execution minutes and costs us money. Since there is no way to
+        # set a limit of retries in the tool, we are limiting it via
+        # the CI step's timeout.
+        timeout-minutes: 1
+      - name: Analyze Code
+        run: flutter analyze
+      - name: Check Formatting
+        run: dart format -o none --set-exit-if-changed .
+      - name: Test
+        run: flutter test

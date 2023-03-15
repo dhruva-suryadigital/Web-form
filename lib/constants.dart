@@ -57,4 +57,8 @@ class Constants {
     fontSize: 16,
     color: Color(0xff6A39F1),
   );
+  static const EdgeInsets fieldPadding = EdgeInsets.symmetric(
+    horizontal: 14,
+    vertical: 12,
+  );
 }

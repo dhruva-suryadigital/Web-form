@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
 import 'package:form_web/pages/view_response.dart';
+import 'package:form_web/widgets.dart';
 import '../constants.dart';
 import '../models/form_data.dart';
 
@@ -18,7 +19,7 @@ class _FormPageState extends State<FormPage> {
   bool _areFieldsEmpty = false;
   Gender? _gender;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  FormResponse formResponse = FormResponse();
+  FormResponse _formResponse = FormResponse();
   String? _dropDownValue;
 
   void _isEmpty() {
@@ -29,6 +30,13 @@ class _FormPageState extends State<FormPage> {
       } else {
         _areFieldsEmpty = false;
       }
+    });
+  }
+
+  onChange(value) {
+    setState(() {
+      _formResponse = _formResponse.copyWith(gender: value);
+      _gender = value;
     });
   }
 
@@ -144,7 +152,7 @@ class _FormPageState extends State<FormPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => ViewResponse(
-                                              formResponse: formResponse),
+                                              formResponse: _formResponse),
                                         ),
                                       );
                                     },
@@ -176,27 +184,6 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  SizedBox _createGenderTile(Gender value) {
-    return SizedBox(
-      height: 25,
-      child: Row(
-        children: [
-          Radio(
-            value: value,
-            groupValue: _gender,
-            onChanged: (value) {
-              setState(() {
-                _gender = value!;
-              });
-              formResponse = formResponse.copyWith(gender: _gender);
-            },
-          ),
-          Text(value.name),
-        ],
-      ),
-    );
-  }
-
   Column _getNameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,7 +200,7 @@ class _FormPageState extends State<FormPage> {
             hintText: 'Name*',
           ),
           onSaved: (value) {
-            formResponse = formResponse.copyWith(name: value);
+            _formResponse = _formResponse.copyWith(name: value);
           },
           onChanged: (value) {
             _isEmpty();
@@ -242,6 +229,7 @@ class _FormPageState extends State<FormPage> {
         SizedBox(
           height: 48,
           child: TextFormField(
+            readOnly: true,
             controller: _dateInputController,
             keyboardType: TextInputType.datetime,
             decoration: const InputDecoration(
@@ -267,14 +255,7 @@ class _FormPageState extends State<FormPage> {
               _isEmpty();
             },
             onSaved: (value) {
-              formResponse = formResponse.copyWith(dob: value);
-            },
-            validator: (value) {
-              if (_isValidDate(value!)) {
-                return null;
-              } else {
-                return "Not a valid date";
-              }
+              _formResponse = _formResponse.copyWith(dob: value);
             },
           ),
         ),
@@ -291,9 +272,12 @@ class _FormPageState extends State<FormPage> {
           style: Constants.mainStyle,
         ),
         const SizedBox(height: 10),
-        _createGenderTile(Gender.male),
-        _createGenderTile(Gender.female),
-        _createGenderTile(Gender.other),
+        for (var value in Gender.values)
+          GenderTile(
+            value: value,
+            groupValue: _gender,
+            onChange: onChange,
+          ),
       ],
     );
   }
@@ -314,7 +298,7 @@ class _FormPageState extends State<FormPage> {
             hintText: 'Enter your message',
           ),
           onSaved: (value) {
-            formResponse = formResponse.copyWith(opinion: value);
+            _formResponse = _formResponse.copyWith(opinion: value);
           },
         ),
       ],
@@ -343,7 +327,7 @@ class _FormPageState extends State<FormPage> {
               .toList(),
           onChanged: (selected) {
             _dropDownValue = selected!;
-            formResponse = formResponse.copyWith(country: _dropDownValue);
+            _formResponse = _formResponse.copyWith(country: _dropDownValue);
           },
         ),
       ],
@@ -364,43 +348,5 @@ class _FormPageState extends State<FormPage> {
         const Text('I agree to the terms and conditions'),
       ],
     );
-  }
-
-  bool _isLeap(int year) {
-    return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0));
-  }
-
-  bool _isValidDate(String date) {
-    RegExp exp = RegExp(r'(\d\d-?\d\d-?\d\d\d\d)');
-    if (exp.hasMatch(date)) {
-      int d = int.parse(date.substring(0, 2));
-      int m = int.parse(date.substring(3, 5));
-      int y = int.parse(date.substring(6, 10));
-      //print(d);
-      // print(m);
-      //print(y);
-      if (y > 2023 || y < 1950) {
-        return false;
-      }
-      if (m < 1 || m > 12) {
-        return false;
-      }
-      if (d < 1 || d > 31) {
-        return false;
-      }
-      if (m == 2) {
-        if (_isLeap(y)) {
-          return (d <= 29);
-        } else {
-          return (d <= 28);
-        }
-      }
-      if (m == 4 || m == 6 || m == 9 || m == 11) {
-        return (d <= 30);
-      }
-      return true;
-    } else {
-      return false;
-    }
   }
 }

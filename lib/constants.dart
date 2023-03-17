@@ -50,8 +50,10 @@ class Constants {
     fontSize: 12,
     fontWeight: FontWeight.bold,
   );
-  static const EdgeInsets formPadding =
-      EdgeInsets.symmetric(vertical: 16, horizontal: 32);
+  static const EdgeInsets formPadding = EdgeInsets.symmetric(
+    vertical: 16,
+    horizontal: 32,
+  );
   static const TextStyle appBarStyle = TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: 16,

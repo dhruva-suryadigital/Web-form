@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
+import 'package:form_web/pages/view_response.dart';
 import 'package:form_web/widgets.dart';
 import '../constants.dart';
 import '../models/form_data.dart';
@@ -146,7 +147,15 @@ class _FormPageState extends State<FormPage> {
                                   const SizedBox(width: 12),
                                   OutlinedButton(
                                     style: Constants.actionStyle,
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ViewResponse(
+                                              formResponse: _formResponse),
+                                        ),
+                                      );
+                                    },
                                     child: const Text(
                                       'View Response',
                                       style: Constants.alertStyle,

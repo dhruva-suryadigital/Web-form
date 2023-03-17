@@ -12,9 +12,9 @@ class FormPage extends StatefulWidget {
 }
 
 class _FormPageState extends State<FormPage> {
-  TextEditingController dateInputController = TextEditingController();
-  TextEditingController nameInputController = TextEditingController();
-  bool _checkBoxState = false;
+  final TextEditingController _dateInputController = TextEditingController();
+  final TextEditingController _nameInputController = TextEditingController();
+  bool _isChecked = false;
   bool _areFieldsEmpty = false;
   Gender? _gender;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -23,8 +23,8 @@ class _FormPageState extends State<FormPage> {
 
   void _isEmpty() {
     setState(() {
-      if ((dateInputController.text.isNotEmpty) &&
-          (nameInputController.text.isNotEmpty)) {
+      if ((_dateInputController.text.isNotEmpty) &&
+          (_nameInputController.text.isNotEmpty)) {
         _areFieldsEmpty = true;
       } else {
         _areFieldsEmpty = false;
@@ -54,11 +54,11 @@ class _FormPageState extends State<FormPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  child: nameField(),
+                                  child: _getNameField(),
                                 ),
                                 const SizedBox(width: 32),
                                 Expanded(
-                                  child: dobField(),
+                                  child: _getDobField(),
                                 ),
                               ],
                             ),
@@ -67,34 +67,34 @@ class _FormPageState extends State<FormPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  child: genderField(),
+                                  child: _getGenderField(),
                                 ),
                                 const SizedBox(width: 32),
                                 Expanded(
-                                  child: countryField(),
+                                  child: _getCountryField(),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 32),
-                            opinionFiled(),
+                            _getOpinionFiled(),
                             const SizedBox(height: 32),
-                            checkboxField(),
+                            _getCheckboxField(),
                           ],
                         );
                       } else {
                         return Column(
                           children: [
-                            nameField(),
+                            _getNameField(),
                             const SizedBox(height: 32),
-                            dobField(),
+                            _getDobField(),
                             const SizedBox(height: 32),
-                            genderField(),
+                            _getGenderField(),
                             const SizedBox(height: 32),
-                            countryField(),
+                            _getCountryField(),
                             const SizedBox(height: 32),
-                            opinionFiled(),
+                            _getOpinionFiled(),
                             const SizedBox(height: 32),
-                            checkboxField(),
+                            _getCheckboxField(),
                           ],
                         );
                       }
@@ -107,7 +107,7 @@ class _FormPageState extends State<FormPage> {
           Expanded(
             child: ElevatedButton(
               style: Constants.buttonStyle,
-              onPressed: (_checkBoxState && _areFieldsEmpty)
+              onPressed: (_isChecked && _areFieldsEmpty)
                   ? () {
                       bool validate = _formKey.currentState!.validate();
                       if (validate) {
@@ -176,7 +176,7 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  SizedBox createGenderTile(Gender value) {
+  SizedBox _createGenderTile(Gender value) {
     return SizedBox(
       height: 25,
       child: Row(
@@ -197,7 +197,7 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  Column nameField() {
+  Column _getNameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -207,7 +207,7 @@ class _FormPageState extends State<FormPage> {
         ),
         const SizedBox(height: 10),
         TextFormField(
-          controller: nameInputController,
+          controller: _nameInputController,
           decoration: const InputDecoration(
             contentPadding: Constants.fieldPadding,
             hintText: 'Name*',
@@ -230,7 +230,7 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  Column dobField() {
+  Column _getDobField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -242,7 +242,7 @@ class _FormPageState extends State<FormPage> {
         SizedBox(
           height: 48,
           child: TextFormField(
-            controller: dateInputController,
+            controller: _dateInputController,
             keyboardType: TextInputType.datetime,
             decoration: const InputDecoration(
               contentPadding: Constants.fieldPadding,
@@ -257,9 +257,9 @@ class _FormPageState extends State<FormPage> {
                   lastDate: DateTime(2024));
 
               if (pickedDate != null) {
-                dateInputController.text = formatDate(
+                _dateInputController.text = formatDate(
                   pickedDate,
-                  [dd, '/', mm, '/', yyyy],
+                  [dd, '-', mm, '-', yyyy],
                 );
               }
             },
@@ -269,13 +269,20 @@ class _FormPageState extends State<FormPage> {
             onSaved: (value) {
               formResponse = formResponse.copyWith(dob: value);
             },
+            validator: (value) {
+              if (_isValidDate(value!)) {
+                return null;
+              } else {
+                return "Not a valid date";
+              }
+            },
           ),
         ),
       ],
     );
   }
 
-  Column genderField() {
+  Column _getGenderField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -284,14 +291,14 @@ class _FormPageState extends State<FormPage> {
           style: Constants.mainStyle,
         ),
         const SizedBox(height: 10),
-        createGenderTile(Gender.male),
-        createGenderTile(Gender.female),
-        createGenderTile(Gender.other),
+        _createGenderTile(Gender.male),
+        _createGenderTile(Gender.female),
+        _createGenderTile(Gender.other),
       ],
     );
   }
 
-  Column opinionFiled() {
+  Column _getOpinionFiled() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -314,7 +321,7 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  Column countryField() {
+  Column _getCountryField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -343,19 +350,57 @@ class _FormPageState extends State<FormPage> {
     );
   }
 
-  Row checkboxField() {
+  Row _getCheckboxField() {
     return Row(
       children: [
         Checkbox(
-            value: _checkBoxState,
+            value: _isChecked,
             onChanged: (value) {
               _isEmpty();
               setState(() {
-                _checkBoxState = value!;
+                _isChecked = value!;
               });
             }),
         const Text('I agree to the terms and conditions'),
       ],
     );
+  }
+
+  bool _isLeap(int year) {
+    return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0));
+  }
+
+  bool _isValidDate(String date) {
+    RegExp exp = RegExp(r'(\d\d-?\d\d-?\d\d\d\d)');
+    if (exp.hasMatch(date)) {
+      int d = int.parse(date.substring(0, 2));
+      int m = int.parse(date.substring(3, 5));
+      int y = int.parse(date.substring(6, 10));
+      //print(d);
+      // print(m);
+      //print(y);
+      if (y > 2023 || y < 1950) {
+        return false;
+      }
+      if (m < 1 || m > 12) {
+        return false;
+      }
+      if (d < 1 || d > 31) {
+        return false;
+      }
+      if (m == 2) {
+        if (_isLeap(y)) {
+          return (d <= 29);
+        } else {
+          return (d <= 28);
+        }
+      }
+      if (m == 4 || m == 6 || m == 9 || m == 11) {
+        return (d <= 30);
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 }

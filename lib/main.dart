@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_web/pages/mobile_form.dart';
 import 'constants.dart';
 
 void main() {
@@ -25,7 +26,7 @@ class App extends StatelessWidget {
         ),
         primarySwatch: Constants.primaryColor,
       ),
-      home: const Placeholder(),
+      home: const MobileForm(),
     );
   }
 }

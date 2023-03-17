@@ -32,8 +32,9 @@ class _FormPageState extends State<FormPage> {
     });
   }
 
-  onChange(value) {
+  void _onChange(value) {
     setState(() {
+      _formResponse = _formResponse.copyWith(gender: value);
       _gender = value;
     });
   }
@@ -266,7 +267,7 @@ class _FormPageState extends State<FormPage> {
           GenderTile(
             value: value,
             groupValue: _gender,
-            onChange: onChange,
+            onChange: _onChange,
           ),
       ],
     );

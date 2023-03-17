@@ -250,7 +250,7 @@ class _FormPageState extends State<FormPage> {
               if (pickedDate != null) {
                 _dateInputController.text = formatDate(
                   pickedDate,
-                  [dd, '/', mm, '/', yyyy],
+                  [dd, '-', mm, '-', yyyy],
                 );
               }
             },
@@ -259,6 +259,13 @@ class _FormPageState extends State<FormPage> {
             },
             onSaved: (value) {
               formResponse = formResponse.copyWith(dob: value);
+            },
+            validator: (value) {
+              if (_isValidDate(value!)) {
+                return null;
+              } else {
+                return "Not a valid date";
+              }
             },
           ),
         ),
@@ -348,5 +355,43 @@ class _FormPageState extends State<FormPage> {
         const Text('I agree to the terms and conditions'),
       ],
     );
+  }
+
+  bool _isLeap(int year) {
+    return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0));
+  }
+
+  bool _isValidDate(String date) {
+    RegExp exp = RegExp(r'(\d\d-?\d\d-?\d\d\d\d)');
+    if (exp.hasMatch(date)) {
+      int d = int.parse(date.substring(0, 2));
+      int m = int.parse(date.substring(3, 5));
+      int y = int.parse(date.substring(6, 10));
+      //print(d);
+      // print(m);
+      //print(y);
+      if (y > 2023 || y < 1950) {
+        return false;
+      }
+      if (m < 1 || m > 12) {
+        return false;
+      }
+      if (d < 1 || d > 31) {
+        return false;
+      }
+      if (m == 2) {
+        if (_isLeap(y)) {
+          return (d <= 29);
+        } else {
+          return (d <= 28);
+        }
+      }
+      if (m == 4 || m == 6 || m == 9 || m == 11) {
+        return (d <= 30);
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 }
